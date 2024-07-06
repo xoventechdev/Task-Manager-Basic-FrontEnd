@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { TaskListByStatus } from "../../../apiRequest/APIRequest";
@@ -12,6 +12,21 @@ import { UpdateTask } from "../../../helper/UpdateHelper";
 
 const Completed = () => {
   const CompletedList = useSelector((state) => state.task.completedTask);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredList = React.useMemo(() => {
+    if (!searchTerm) {
+      return CompletedList;
+    }
+
+    const lowercaseSearchTerm = searchTerm.toLowerCase();
+    return CompletedList.filter((item) => {
+      return (
+        item.title?.toLowerCase().includes(lowercaseSearchTerm) ||
+        item.description?.toLowerCase().includes(lowercaseSearchTerm)
+      );
+    });
+  }, [searchTerm, CompletedList]);
 
   useEffect(() => {
     TaskListByStatus("completed");
@@ -38,20 +53,21 @@ const Completed = () => {
         <div className="col-12 col-md-6 col-lg-8 px-3">
           <h5>Completed Task</h5>
         </div>
-        <div className="col-12 float-end col-md-6 col-lg-4 px-2">
-          <div className="row">
+        <div className="col-12 float-end col-md-6 col-lg-4 ">
+          <div className="row justify-content-end">
             <div className="col-8">
-              <input className="form-control w-100" />
-            </div>
-            <div className="col-4">
-              <button className="btn btn-primary w-100">Search</button>
+              <input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="form-control w-100"
+              />
             </div>
           </div>
         </div>
       </div>
       <div className="row p-0 m-0">
-        {CompletedList.length > 0 ? (
-          CompletedList.map((item, i) => (
+        {filteredList.length > 0 ? (
+          filteredList.map((item, i) => (
             <div
               key={i.toString()}
               className="col-12 col-lg-4 col-sm-6 col-md-4  p-2"

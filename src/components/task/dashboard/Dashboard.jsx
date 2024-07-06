@@ -7,7 +7,6 @@ const Dashboard = () => {
     TaskSummary();
   }, []);
   const taskSummary = useSelector((state) => state.summary.value);
-  console.log(taskSummary);
   return (
     <>
       <div className="container">
